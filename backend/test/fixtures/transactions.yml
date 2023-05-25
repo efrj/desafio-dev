@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  transaction_type: 1
+  date: 2023-05-23 18:15:23
+  amount: 9.99
+  cpf: MyString
+  card: MyString
+  time: 2023-05-23 18:15:23
+  store_owner: MyString
+  store_name: MyString
+
+two:
+  transaction_type: 1
+  date: 2023-05-23 18:15:23
+  amount: 9.99
+  cpf: MyString
+  card: MyString
+  time: 2023-05-23 18:15:23
+  store_owner: MyString
+  store_name: MyString
