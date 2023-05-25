@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+
+  <meta charset="utf-8">
+  <title>CNAB Transactions</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="twelve columns">
+        <h1>CNAB Transactions</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <h4>Upload do arquivo CNAB</h4>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <form id="cnabUploadForm">
+          <div class="row">
+            <div class="ten columns">
+              <label for="fileUpload">Arquivo CNAB</label>
+              <input class="u-full-width" type="file" placeholder="Selecione o arquivo CNAB" id="fileUpload" required>
+            </div>
+          </div>
+          <input class="button-primary" type="submit" value="Enviar">
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <h4>Transações</h4>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <table class="u-full-width">
+          <thead>
+            <tr>
+              <th>Proprietário</th>
+              <th>Loja</th>
+              <th>Saldo em Conta</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBody">
+          </tbody>
+        </table>  
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("cnabUploadForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      let formData = new FormData();
+      let fileInput = document.getElementById("fileUpload");
+      let file = fileInput.files[0];
+      formData.append('upload[file]', file);
+
+      axios.post('http://localhost:3000/uploads', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(function(response) {
+        console.log(response);
+        alert("Arquivo CNAB enviado com sucesso!");
+        fileInput.value = '';
+      }).catch(function(error) {
+        console.log(error);
+      });
+    });
+
+    function loadTransactions() {
+      axios.get('http://localhost:3000/transactions')
+      .then(function(response) {
+        let transactions = response.data;
+        let tableBody = document.getElementById('transactionTableBody');
+
+        while (tableBody.firstChild) {
+          tableBody.removeChild(tableBody.firstChild);
+        }
+
+        transactions.forEach(function(transaction) {
+          let row = tableBody.insertRow();
+
+          let companyCell = row.insertCell(0);
+          companyCell.textContent = transaction.company_name;
+
+          let shopCell = row.insertCell(1);
+          shopCell.textContent = transaction.shop_name;
+
+          let balanceCell = row.insertCell(2);
+
+          let balance = Number(transaction.balance);
+          balanceCell.textContent = balance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+    }
+
+    loadTransactions();
+
+    setInterval(loadTransactions, 2000);
+  });
+  </script> 
+</body>
+</html>
