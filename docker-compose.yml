@@ -1,0 +1,47 @@
+version: '3'
+services:
+  redis:
+    image: redis
+  db:
+    image: postgres
+    volumes:
+      - ./backend/tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+  web:
+    build: ./backend
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./backend:/myapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+  sidekiq:
+    build: ./backend
+    command: bundle exec sidekiq
+    volumes:
+      - ./backend:/myapp
+    depends_on:
+      - db
+      - redis
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin:/root/.pgadmin
+    depends_on:
+      - db
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+volumes:
+  pgadmin:
