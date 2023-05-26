@@ -88,10 +88,12 @@
       }).then(function(response) {
         console.log(response);
         alert("Arquivo CNAB enviado com sucesso!");
-        fileInput.value = '';
       }).catch(function(error) {
         console.log(error);
+        alert("Falha no envio do arquivo!");
       });
+
+      fileInput.value = '';
     });
 
     function loadTransactions() {
