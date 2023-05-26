@@ -2,6 +2,11 @@ class Transaction < ApplicationRecord
   belongs_to :company
   belongs_to :shop
 
+  validates :amount, presence: true
+  validates :transaction_type, presence: true
+  validates :card_number, presence: true
+  validates :hour, presence: true
+
   enum transaction_type: {
     debit: 1,
     boleto: 2,
